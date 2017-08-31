@@ -7,12 +7,23 @@ export default class SearchComponent extends React.Component {
     super();
 
     this.state = {
-      results: []
+      results: [],
+      query: ''
     }
   }
 
   componentDidMount() {
-    fetch('http://localhost:4000/search')
+    this.search();
+  }
+
+  search() {
+
+    let url = 'http://localhost:4000/search';
+    if (this.state.query !== '') {
+      url += '?q=' + this.state.query;
+    }
+
+    fetch(url)
       .then((response) => {
         return response.json();
       })
@@ -23,11 +34,21 @@ export default class SearchComponent extends React.Component {
       });
   }
 
+  handleSearchChange = (evt) => {
+    this.setState({
+      query: evt.target.value
+    }, () => {
+      this.search();
+    });
+  }
+
 
   render() {
     return (
       <div>
         <h1>Search component</h1>
+
+        <input placeholder="search" value={this.state.query} onChange={this.handleSearchChange} />
 
         {this.state.results.map((x) => {
           return <div key={x.id}><Link to={`/person/${x.id}`}>{x.name}</Link></div>
